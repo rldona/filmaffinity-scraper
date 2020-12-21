@@ -36,7 +36,7 @@ async function scrappingFilmaffinty (id) {
   await page.goto(urlFilm);
 
   try {
-    await page.waitForSelector('button.sc-ifAKCX', { timeout: 5000 });
+    await page.waitForSelector('button.sc-ifAKCX', { timeout: 50 });
     console.log(`==> ${config.filmId} | Found !!<==`);
     db.collection('filmaffinity-id-list').doc(`${config.filmId}`).set({ id: config.filmId, url: urlFilm });
   } catch (e) {
