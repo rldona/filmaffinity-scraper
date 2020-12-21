@@ -60,10 +60,10 @@ async function scrappingFilmaffinty (id) {
   const initScraping = 47530;
 
   // Busca 10M de posible películas, series, documentales, etc
-  // for (let i = initScraping; i < 10000000; i++) {
-  //   await scrappingFilmaffinty(i);
-  // }
+  for (let i = initScraping; i < 10000000; i++) {
+    await scrappingFilmaffinty(i);
+  }
 
-  await scrappingFilmaffinty(134556);
+  // await scrappingFilmaffinty(134556);
 
 })();
