@@ -7,8 +7,7 @@ admin.initializeApp({
   databaseURL: "https://filmaffinity-api.firebaseio.com"
 });
 
-const myArgs = process.argv.slice(2);
-const db     = admin.firestore();
+const db = admin.firestore();
 
 // TODO: cambiar las variables con film y poner 'media' en su lugar (para que sea agnótico al tipo: movies, shows, documentary, etc)
 
@@ -48,7 +47,7 @@ async function scrappingFilmaffinty (id) {
 
 (async () => {
 
-  for (let i = myArgs[0]; i <= myArgs[1]; i++) {
+  for (let i = 400000; i < 500000; i++) {
     await scrappingFilmaffinty(i);
   }
 
