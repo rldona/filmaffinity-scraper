@@ -40,9 +40,7 @@ async function scrappingFilmaffinty (id) {
     console.log(`==> ${config.filmId} | Found !!<==`);
     db.collection('filmaffinity-id-list').doc(`${config.filmId}`).set({ id: config.filmId, url: urlFilm });
   } catch (e) {
-    if (config.filmId % 100 === 0) {
-      console.log(`==> ${config.filmId} | KO <==`);
-    }
+    console.log(`==> ${config.filmId} | KO <==`);
   }
 
   await browser.close();
