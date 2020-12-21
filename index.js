@@ -57,7 +57,7 @@ async function scrappingFilmaffinty (id) {
   // hasta 32700 ==> KO
   // hasta 47530 ==> KO
 
-  const initScraping = 47530;
+  const initScraping = 47614;
 
   // Busca 10M de posible películas, series, documentales, etc
   for (let i = initScraping; i < 10000000; i++) {
