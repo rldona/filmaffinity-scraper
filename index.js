@@ -1,6 +1,5 @@
-const puppeteer = require('puppeteer');
-const admin = require("firebase-admin");
-
+const puppeteer      = require('puppeteer');
+const admin          = require("firebase-admin");
 const serviceAccount = require("./filmaffinity-api-firebase-adminsdk-hfsxr-99032fbdcb.json");
 
 admin.initializeApp({
@@ -8,7 +7,8 @@ admin.initializeApp({
   databaseURL: "https://filmaffinity-api.firebaseio.com"
 });
 
-const db = admin.firestore();
+const myArgs = process.argv.slice(2);
+const db     = admin.firestore();
 
 // TODO: cambiar las variables con film y poner 'media' en su lugar (para que sea agnótico al tipo: movies, shows, documentary, etc)
 
@@ -48,22 +48,10 @@ async function scrappingFilmaffinty (id) {
 
 (async () => {
 
-  // hasta  5000 ==> KO
-  // hasta 10000 ==> KO
-  // hasta 15000 ==> KO
-  // hasta 17000 ==> KO
-  // hasta 18000 ==> KO
-  // hasta 30700 ==> KO
-  // hasta 32700 ==> KO
-  // hasta 47530 ==> KO
-
-  const initScraping = 47614;
-
-  // Busca 10M de posible películas, series, documentales, etc
-  for (let i = initScraping; i < 10000000; i++) {
+  for (let i = myArgs[0]; i <= myArgs[1]; i++) {
     await scrappingFilmaffinty(i);
   }
 
-  // await scrappingFilmaffinty(134556);
+  process.exit();
 
 })();
