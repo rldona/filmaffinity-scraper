@@ -13,6 +13,8 @@ const db = admin.firestore();
 // TODO: cambiar las variables con film y poner 'media' en su lugar (para que sea agnótico al tipo: movies, shows, documentary, etc)
 
 async function scrappingFilmaffinty (id) {
+  const urlFilm = `https://www.filmaffinity.com/es/film${config.filmId}.html`;
+
   let config = {
     headless: true,
     viewDeminsions: {
@@ -21,8 +23,6 @@ async function scrappingFilmaffinty (id) {
     },
     filmId: id
   }
-
-  const urlFilm = `https://www.filmaffinity.com/es/film${config.filmId}.html`;
 
   const browser = await puppeteer.launch({
     headless: config.headless,
