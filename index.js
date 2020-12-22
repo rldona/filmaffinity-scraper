@@ -1,11 +1,15 @@
-const puppeteer      = require('puppeteer');
-const admin          = require("firebase-admin");
+const puppeteer            = require('puppeteer');
+const admin                = require("firebase-admin");
+const filmaffinityScrapper = require("./filmaffinity-scraper");
+
 const serviceAccount = require("./filmaffinity-api-firebase-adminsdk-hfsxr-99032fbdcb.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://filmaffinity-api.firebaseio.com"
 });
+
+const db = admin.firestore();
 
 // TODO: cambiar las variables con film y poner 'media' en su lugar (para que sea agnótico al tipo: movies, shows, documentary, etc)
 
@@ -34,8 +38,10 @@ async function scrappingFilmaffinty (id) {
 
   try {
     await page.waitForSelector('button.sc-ifAKCX', { timeout: 500 });
+    await page.click('button.sc-ifAKCX.ljEJIv');
+    const review = await filmaffinityScrapper.init(page, browser);
+    db.collection('filmaffinity-media-list').doc(`${config.filmId}`).set({ id: config.filmId, url: urlFilm, review: review });
     console.log(`==> ${config.filmId} | Found !!<==`);
-    db.collection('filmaffinity-id-list').doc(`${config.filmId}`).set({ id: config.filmId, url: urlFilm });
   } catch (e) {
     console.log(`==> ${config.filmId} | KO <==`);
   }
@@ -45,7 +51,7 @@ async function scrappingFilmaffinty (id) {
 
 (async () => {
 
-  for (let i = 49500; i <= 100000; i++) {
+  for (let i = 801280; i < 900000; i++) {
     await scrappingFilmaffinty(i);
   }
 

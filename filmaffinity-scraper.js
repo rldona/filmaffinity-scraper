@@ -1,34 +1,92 @@
 const puppeteer = require('puppeteer');
 
-exports.init = async (page, url) => {
-  const URL_PAGE = url;
-
-  // go to Filmaffinity page
-  await page.goto(URL_PAGE);
-
-  await page.waitForSelector('button.sc-ifAKCX')
-  await page.click('button.sc-ifAKCX.ljEJIv');
-
-  await page.waitForSelector('#header-top #top-search-input')
-  await page.click('#header-top #top-search-input')
-
-  await page.$eval('#header-top #top-search-input', (el, searchTerm) => el.value = searchTerm, searchTerm);
-  await page.click('#header-top #button-search')
-
-  await page.waitForSelector('#title-result > .z-search > .se-it:nth-child(2) > .fa-shadow-nb > .movie-card > .mc-info-container > .mc-title > a')
-  await page.click('#title-result > .z-search > .se-it:nth-child(2) > .fa-shadow-nb > .movie-card > .mc-info-container > .mc-title > a')
-
-  await page.waitForSelector('.movie-disclaimer');
-
+exports.init = async (page, browser) => {
   const result = await page.evaluate(() => {
+    // title
 
-    console.log(document);
+    const movieTitle = document.querySelector('[itemprop="name"]') ? document.querySelector('[itemprop="name"]').textContent : '';
 
-    const movieTitle = document.querySelector('h1 span') ? document.querySelector('h1 span').textContent : '';
-    const reviewDescription = document.querySelector('[itemprop="description"]') ? document.querySelector('[itemprop="description"]').textContent : '';
-    const reviewImage = document.querySelector('[itemprop="image"]') ? document.querySelector('[itemprop="image"]').outerHTML.split(' ')[4].replace('src="', '').replace('"', '') : '';
-    const ratingAvergae = document.querySelector('#movie-rat-avg') ? document.querySelector('#movie-rat-avg').textContent.split('').filter(word => word !== ' ' && word !== '\n' && word !== ',').toString() : '0';
-    const ratingCount = document.querySelector('#movie-count-rat > span') ? document.querySelector('#movie-count-rat > span').textContent : '0';
+    // year
+
+    const reviewYear = document.querySelector('[itemprop="datePublished"]') ? document.querySelector('[itemprop="datePublished"]').textContent : '';
+
+    // duration
+
+    const reviewDuration = document.querySelector('[itemprop="duration"]') ? document.querySelector('[itemprop="duration"]').textContent.split(' ')[0] : '';
+
+    // directors
+
+    let reviewDirectors = [];
+
+    const reviewDirectorsList = document.querySelectorAll('.directors > .credits > .nb > a') || [];
+
+    reviewDirectorsList.forEach(directors => {
+      let directorItem = directors.querySelector('span').textContent;
+      reviewDirectors.push(directorItem);
+    });
+
+    // credits
+
+    let reviewCredits = [];
+
+    const reviewCreditList = document.querySelectorAll('.nb') || [];
+
+    reviewCreditList.forEach(review => {
+      let creditItem = review.querySelector('span').textContent;
+      reviewCredits.push(creditItem);
+    });
+
+
+    // casting
+
+    let reviewCasting = [];
+
+    const reviewCastingList = document.querySelectorAll('.card-cast > .credits > .nb > a') || [];
+
+    reviewCastingList.forEach(casting => {
+      let castingItem = casting.querySelector('span').textContent;
+      reviewCasting.push(castingItem);
+    });
+
+    // producer
+
+    let reviewProducer = [];
+
+    const reviewProducerList = document.querySelectorAll('.card-producer > .credits > .nb') || [];
+
+    reviewProducerList.forEach(producer => {
+      let producerItem = producer.querySelector('span').textContent;
+      reviewProducer.push(producerItem);
+    });
+
+
+    // genres
+
+    let reviewGenres = [];
+
+    const reviewGenresList = document.querySelectorAll('.card-genres span') || [];
+
+    reviewGenresList.forEach(genre => {
+      reviewGenres.push(genre.textContent);
+    });
+
+    // sinopsis
+
+    const reviewDescription = document.querySelector('[itemprop="description"]') ? document.querySelector('[itemprop="description"]').textContent : '-';
+
+    // thumbnail
+
+    const reviewImage = document.querySelector('[itemprop="image"]') ? document.querySelector('[itemprop="image"]').outerHTML.split(' ')[4].replace('src="', '').replace('"', '') : '-';
+
+    // rating average
+
+    const ratingAverage = document.querySelector('#movie-rat-avg') ? document.querySelector('#movie-rat-avg').textContent.split('').filter(word => word !== ' ' && word !== '\n' && word !== ',').toString() : '-';
+
+    // rating count
+
+    const ratingCount = document.querySelector('#movie-count-rat > span') ? document.querySelector('#movie-count-rat > span').textContent : '-';
+
+    // professional review list
 
     const professionalReviewList = document.querySelectorAll('#pro-reviews li') || [];
 
@@ -48,17 +106,40 @@ exports.init = async (page, url) => {
       }
     });
 
+    // credits configuration
+
+    reviewCredits.shift();
+
+    // TODO: hay que eliminar los generos que se cuelan al final
+    reviewCredits = reviewCredits.filter(val => {
+      return reviewCasting.indexOf(val) == -1;
+    });
+
+    // large thumbnail
+
+    const reviewLargeThumbnail = reviewImage.replace("mmed", "large");
+
     return {
       title: movieTitle,
+      duration: reviewDuration,
+      year: reviewYear,
+      directors: reviewDirectors,
+      credits: reviewCredits,
+      casting: reviewCasting,
+      producer: reviewProducer,
+      genres: reviewGenres,
       sinopsis: reviewDescription,
-      thumbnail: reviewImage,
-      ratingAvergae: ratingAvergae,
+      thumbnailMedium: reviewImage,
+      thumbnailLarge: reviewLargeThumbnail,
+      ratingAverage: ratingAverage,
       ratingCount: ratingCount,
       reviewList
     }
   });
 
-  await browser.close();
+  // country
+
+  result.country = await page.$eval('#country-img > img', span => span.getAttribute('title'));
 
   return result;
 }
