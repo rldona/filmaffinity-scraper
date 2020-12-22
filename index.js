@@ -1,5 +1,5 @@
-const puppeteer            = require('puppeteer');
-const admin                = require("firebase-admin");
+const puppeteer = require('puppeteer');
+const admin = require("firebase-admin");
 const filmaffinityScrapper = require("./filmaffinity-scraper");
 
 const serviceAccount = require("./filmaffinity-api-firebase-adminsdk-hfsxr-99032fbdcb.json");
@@ -9,11 +9,11 @@ admin.initializeApp({
   databaseURL: "https://filmaffinity-api.firebaseio.com"
 });
 
-const db = admin.firestore();
-
 // TODO: cambiar las variables con film y poner 'media' en su lugar (para que sea agnótico al tipo: movies, shows, documentary, etc)
 
 async function scrappingFilmaffinty (id) {
+  const db = admin.firestore();
+
   let config = {
     headless: true,
     viewDeminsions: {
