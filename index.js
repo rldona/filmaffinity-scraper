@@ -39,7 +39,7 @@ async function scrappingFilmaffinty (id) {
   let reviewsRef = db.collection('reviews');
 
   try {
-    await page.waitForSelector('button.sc-ifAKCX', { timeout: 500 });
+    await page.waitForSelector('button.sc-ifAKCX', { timeout: 100 });
     await page.click('button.sc-ifAKCX.ljEJIv');
     const review = await filmaffinityScrapper.init(page, browser);
     reviewsRef.doc(`${config.filmId}`).set({ id: config.filmId, ...review, url: urlFilm });
