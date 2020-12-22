@@ -39,7 +39,7 @@ async function scrappingFilmaffinty (id) {
   let reviewsRef = db.collection('reviews');
 
   try {
-    await page.waitForSelector('button.sc-ifAKCX', { timeout: 100 });
+    await page.waitForSelector('button.sc-ifAKCX', { timeout: 300 });
     await page.click('button.sc-ifAKCX.ljEJIv');
     const review = await filmaffinityScrapper.init(page, browser);
     reviewsRef.doc(`${config.filmId}`).set({ id: config.filmId, ...review, url: urlFilm });
@@ -55,6 +55,8 @@ async function scrappingFilmaffinty (id) {
   for (let i = 800000; i < 900000; i++) {
     await scrappingFilmaffinty(i);
   }
+
+  console.log('==> Carga completa <==');
 
   process.exit();
 
