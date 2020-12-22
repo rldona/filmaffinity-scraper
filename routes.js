@@ -11,7 +11,6 @@ const db = admin.firestore();
 // búsqueda por un término
 // .where('review.title', '==', 'Caos en la ciudad (TV)')
 
-
 module.exports = function(app) {
 
   app.get('/ping', (req, res) => {

@@ -3,19 +3,15 @@ const puppeteer = require('puppeteer');
 exports.init = async (page, browser) => {
   const result = await page.evaluate(() => {
     // title
-
     const movieTitle = document.querySelector('[itemprop="name"]') ? document.querySelector('[itemprop="name"]').textContent : '';
 
     // year
-
     const reviewYear = document.querySelector('[itemprop="datePublished"]') ? document.querySelector('[itemprop="datePublished"]').textContent : '';
 
     // duration
-
     const reviewDuration = document.querySelector('[itemprop="duration"]') ? document.querySelector('[itemprop="duration"]').textContent.split(' ')[0] : '';
 
     // directors
-
     let reviewDirectors = [];
 
     const reviewDirectorsList = document.querySelectorAll('.directors > .credits > .nb > a') || [];
@@ -26,7 +22,6 @@ exports.init = async (page, browser) => {
     });
 
     // credits
-
     let reviewCredits = [];
 
     const reviewCreditList = document.querySelectorAll('.nb') || [];
@@ -36,9 +31,7 @@ exports.init = async (page, browser) => {
       reviewCredits.push(creditItem);
     });
 
-
     // casting
-
     let reviewCasting = [];
 
     const reviewCastingList = document.querySelectorAll('.card-cast > .credits > .nb > a') || [];
@@ -49,7 +42,6 @@ exports.init = async (page, browser) => {
     });
 
     // producer
-
     let reviewProducer = [];
 
     const reviewProducerList = document.querySelectorAll('.card-producer > .credits > .nb') || [];
@@ -59,9 +51,7 @@ exports.init = async (page, browser) => {
       reviewProducer.push(producerItem);
     });
 
-
     // genres
-
     let reviewGenres = [];
 
     const reviewGenresList = document.querySelectorAll('.card-genres span') || [];
@@ -71,23 +61,18 @@ exports.init = async (page, browser) => {
     });
 
     // sinopsis
-
     const reviewDescription = document.querySelector('[itemprop="description"]') ? document.querySelector('[itemprop="description"]').textContent : '-';
 
     // thumbnail
-
     const reviewImage = document.querySelector('[itemprop="image"]') ? document.querySelector('[itemprop="image"]').outerHTML.split(' ')[4].replace('src="', '').replace('"', '') : '-';
 
     // rating average
-
     const ratingAverage = document.querySelector('#movie-rat-avg') ? document.querySelector('#movie-rat-avg').textContent.split('').filter(word => word !== ' ' && word !== '\n' && word !== ',').toString() : '-';
 
     // rating count
-
     const ratingCount = document.querySelector('#movie-count-rat > span') ? document.querySelector('#movie-count-rat > span').textContent : '-';
 
     // professional review list
-
     const professionalReviewList = document.querySelectorAll('#pro-reviews li') || [];
 
     let reviewList = [];
@@ -99,7 +84,7 @@ exports.init = async (page, browser) => {
 
       if (reviewBody && reviewAuthor) {
         reviewList.push({
-          body: reviewBody.textContent,
+          review: reviewBody.textContent,
           author: reviewAuthor.textContent,
           evaluation: reviewEvaluation.outerHTML.split(' ')[5].replace('"', '')
         });
@@ -107,7 +92,6 @@ exports.init = async (page, browser) => {
     });
 
     // credits configuration
-
     reviewCredits.shift();
 
     // TODO: hay que eliminar los generos que se cuelan al final
@@ -116,7 +100,6 @@ exports.init = async (page, browser) => {
     });
 
     // large thumbnail
-
     const reviewLargeThumbnail = reviewImage.replace("mmed", "large");
 
     return {
@@ -129,16 +112,15 @@ exports.init = async (page, browser) => {
       producer: reviewProducer,
       genres: reviewGenres,
       sinopsis: reviewDescription,
-      thumbnailMedium: reviewImage,
-      thumbnailLarge: reviewLargeThumbnail,
-      ratingAverage: ratingAverage,
-      ratingCount: ratingCount,
-      reviewList
+      thumbnail_medium: reviewImage,
+      thumbnail_large: reviewLargeThumbnail,
+      rating_average: ratingAverage,
+      rating_count: ratingCount,
+      review_list: reviewList
     }
   });
 
   // country
-
   result.country = await page.$eval('#country-img > img', span => span.getAttribute('title'));
 
   return result;
