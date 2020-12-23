@@ -18,19 +18,21 @@ module.exports = function(app) {
   ////////////
 
   //
-  // /reviews
+  // /movies
   //
   app.get('/movies', async (req, res) => {
     const query = req.query.q;
 
     db.collection('reviews')
-      .where('genres[0]', 'no-it', ['Serie de TV'])
+      // .where('genres[0]', 'no-it', ['Serie de TV'])
       .limit(10)
       .get()
       .then((snapshot) => {
         let reviewList = [];
         snapshot.forEach((doc) => {
-          reviewList.push(doc.data());
+          if (doc.data().genres[0] !== 'Serie de TV') {
+            reviewList.push(doc.data());
+          }
         });
         res.json(reviewList);
       })
@@ -40,9 +42,9 @@ module.exports = function(app) {
   });
 
   //
-  // /review/:id
+  // /movie/{movie_id}
   //
-  app.get('/movies/:id', async (req, res) => {
+  app.get('/movie/:id', async (req, res) => {
     const id = req.params.id;
     db.collection('reviews').doc(`${id}`).get().then(doc => {
       if (!doc.exists) res.json({});
@@ -51,9 +53,9 @@ module.exports = function(app) {
   });
 
   //
-  // /movies/:id/reviews
+  // /movie/{movie_id}/reviews
   //
-  app.get('/movies/:id/reviews', async (req, res) => {
+  app.get('/movie/:id/reviews', async (req, res) => {
     const id = req.params.id;
     db.collection('reviews').doc(`${id}`).get().then(doc => {
       if (!doc.exists) res.json({});
@@ -68,6 +70,46 @@ module.exports = function(app) {
   //   TV   //
   ////////////
 
+  app.get('/tv', async (req, res) => {
+    const query = req.query.q;
+
+    db.collection('reviews')
+      .where('genres', 'array-contains', ['Serie de TV'])
+      .limit(10)
+      .get()
+      .then((snapshot) => {
+        let reviewList = [];
+        snapshot.forEach((doc) => {
+          reviewList.push(doc.data());
+        });
+        res.json(reviewList);
+      })
+      .catch((err) => {
+        console.log('Error getting documents', err);
+      });
+  });
+
+  app.get('/tv/:id', async (req, res) => {
+    const id = req.params.id;
+    db.collection('reviews').doc(`${id}`).get().then(doc => {
+      if (!doc.exists) res.json({});
+      res.json(doc.data());
+    })
+  });
+
+    //
+  // /movie/{movie_id}/reviews
+  //
+  app.get('/tv/:id/reviews', async (req, res) => {
+    const id = req.params.id;
+    db.collection('reviews').doc(`${id}`).get().then(doc => {
+      if (!doc.exists) res.json({});
+      res.json({
+        id: doc.data().id,
+        reviews: doc.data().review_list
+      });
+    })
+  });
 
   /////////////
   // GENERAL //
