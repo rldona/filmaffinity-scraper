@@ -13,17 +13,18 @@ const db = admin.firestore();
 
 module.exports = function(app) {
 
-  app.get('/ping', (req, res) => {
-    res.json('pong');
-  });
+  ////////////
+  // MOVIES //
+  ////////////
 
   //
   // /reviews
   //
-  app.get('/reviews', async (req, res) => {
+  app.get('/movies', async (req, res) => {
     const query = req.query.q;
 
     db.collection('reviews')
+      .where('genres[0]', 'no-it', ['Serie de TV'])
       .limit(10)
       .get()
       .then((snapshot) => {
@@ -38,15 +39,39 @@ module.exports = function(app) {
       });
   });
 
-    //
-  // /reviews
   //
-  app.get('/review/:id', async (req, res) => {
+  // /review/:id
+  //
+  app.get('/movies/:id', async (req, res) => {
     const id = req.params.id;
     db.collection('reviews').doc(`${id}`).get().then(doc => {
+      if (!doc.exists) res.json({});
       res.json(doc.data());
     })
   });
+
+  //
+  // /movies/:id/reviews
+  //
+  app.get('/movies/:id/reviews', async (req, res) => {
+    const id = req.params.id;
+    db.collection('reviews').doc(`${id}`).get().then(doc => {
+      if (!doc.exists) res.json({});
+      res.json({
+        id: doc.data().id,
+        reviews: doc.data().review_list
+      });
+    })
+  });
+
+  ////////////
+  //   TV   //
+  ////////////
+
+
+  /////////////
+  // GENERAL //
+  /////////////
 
   //
   // /search?q=query
