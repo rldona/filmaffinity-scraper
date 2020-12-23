@@ -53,7 +53,7 @@ async function scrappingFilmaffinty (id) {
 
 (async () => {
 
-  for (let i = 852533; i < 900000; i++) {
+  for (let i = 853177; i < 900000; i++) {
     await scrappingFilmaffinty(i);
   }
 
