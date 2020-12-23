@@ -69,7 +69,7 @@ exports.init = async (page, browser) => {
     const reviewImage = document.querySelector('[itemprop="image"]') ? document.querySelector('[itemprop="image"]').outerHTML.split(' ')[4].replace('src="', '').replace('"', '') : null;
 
     // rating average
-    const ratingAverage = document.querySelector('#movie-rat-avg') ? document.querySelector('#movie-rat-avg').textContent.split('').filter(word => word !== ' ' && word !== '\n' && word !== ',').toString() : null;
+    const ratingAverage = document.querySelector('#movie-rat-avg') ? parseFloat(document.querySelector('#movie-rat-avg').textContent.split('').filter(word => word !== ' ' && word !== '\n' && word !== ',').toString().replace(',', '.')) : null;
 
     // rating count
     const ratingCount = document.querySelector('#movie-count-rat > span') ? document.querySelector('#movie-count-rat > span').textContent : null;
@@ -89,10 +89,10 @@ exports.init = async (page, browser) => {
       });
 
       profesionalReviewsCounter = {
-        positive: countTotalReviews[0],
-        neutral: countTotalReviews[1],
-        negative: countTotalReviews[2],
-        total: professionalReviewCount222.toString().replace(/\s/g, '')
+        positive: parseInt(countTotalReviews[0]),
+        neutral: parseInt(countTotalReviews[1]),
+        negative: parseInt(countTotalReviews[2]),
+        total: parseInt(professionalReviewCount222.toString().replace(/\s/g, ''))
       }
     } else {
       profesionalReviewsCounter = null;
@@ -130,8 +130,8 @@ exports.init = async (page, browser) => {
 
     return {
       title: movieTitle,
-      duration: reviewDuration,
-      year: reviewYear,
+      duration: parseInt(reviewDuration),
+      year: parseInt(reviewYear),
       directors: reviewDirectors,
       credits: reviewCredits,
       casting: reviewCasting,
@@ -142,7 +142,7 @@ exports.init = async (page, browser) => {
       thumbnail_medium: reviewImage,
       thumbnail_large: reviewLargeThumbnail,
       rating_average: ratingAverage,
-      rating_count: ratingCount,
+      rating_count: parseInt(ratingCount),
       professional_register: profesionalReviewsCounter,
       professional_reviews: reviewList,
     }
