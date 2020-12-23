@@ -17,16 +17,51 @@ module.exports = function(app) {
     res.json('pong');
   });
 
+  //
+  // /reviews
+  //
   app.get('/reviews', async (req, res) => {
-    let reviewList = [];
+    const query = req.query.q;
 
-    db.collection('filmaffinity-media-list')
-      .where('review.title', '==', 'Caos en la ciudad (TV)')
-      .limit(100)
+    db.collection('reviews')
+      .limit(10)
       .get()
       .then((snapshot) => {
+        let reviewList = [];
         snapshot.forEach((doc) => {
-          reviewList.push(doc.data().review.year);
+          reviewList.push(doc.data());
+        });
+        res.json(reviewList);
+      })
+      .catch((err) => {
+        console.log('Error getting documents', err);
+      });
+  });
+
+    //
+  // /reviews
+  //
+  app.get('/review/:id', async (req, res) => {
+    const id = req.params.id;
+    db.collection('reviews').doc(`${id}`).get().then(doc => {
+      res.json(doc.data());
+    })
+  });
+
+  //
+  // /search?q=query
+  //
+  app.get('/search', async (req, res) => {
+    const query = req.query.q;
+
+    db.collection('reviews')
+      .where('title', '==', query)
+      .limit(10)
+      .get()
+      .then((snapshot) => {
+        let reviewList = [];
+        snapshot.forEach((doc) => {
+          reviewList.push(doc.data());
         });
         res.json(reviewList);
       })
