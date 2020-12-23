@@ -3,13 +3,14 @@ const puppeteer = require('puppeteer');
 exports.init = async (page, browser) => {
   const result = await page.evaluate(() => {
     // title
-    const movieTitle = document.querySelector('[itemprop="name"]') ? document.querySelector('[itemprop="name"]').textContent : '';
+    // TODO: remove el último carcter en blanco y si tuiera
+    const movieTitle = document.querySelector('[itemprop="name"]') ? document.querySelector('[itemprop="name"]').textContent : null;
 
     // year
-    const reviewYear = document.querySelector('[itemprop="datePublished"]') ? document.querySelector('[itemprop="datePublished"]').textContent : '';
+    const reviewYear = document.querySelector('[itemprop="datePublished"]') ? document.querySelector('[itemprop="datePublished"]').textContent : null;
 
     // duration
-    const reviewDuration = document.querySelector('[itemprop="duration"]') ? document.querySelector('[itemprop="duration"]').textContent.split(' ')[0] : '';
+    const reviewDuration = document.querySelector('[itemprop="duration"]') ? document.querySelector('[itemprop="duration"]').textContent.split(' ')[0] : null;
 
     // directors
     let reviewDirectors = [];
@@ -51,7 +52,6 @@ exports.init = async (page, browser) => {
       reviewProducer.push(producerItem);
     });
 
-    // genres
     let reviewGenres = [];
 
     const reviewGenresList = document.querySelectorAll('.card-genres span') || [];
@@ -60,17 +60,43 @@ exports.init = async (page, browser) => {
       reviewGenres.push(genre.textContent);
     });
 
+    const genre = reviewGenres[0] || null;
+
     // sinopsis
-    const reviewDescription = document.querySelector('[itemprop="description"]') ? document.querySelector('[itemprop="description"]').textContent : '-';
+    const reviewDescription = document.querySelector('[itemprop="description"]') ? document.querySelector('[itemprop="description"]').textContent : null;
 
     // thumbnail
-    const reviewImage = document.querySelector('[itemprop="image"]') ? document.querySelector('[itemprop="image"]').outerHTML.split(' ')[4].replace('src="', '').replace('"', '') : '-';
+    const reviewImage = document.querySelector('[itemprop="image"]') ? document.querySelector('[itemprop="image"]').outerHTML.split(' ')[4].replace('src="', '').replace('"', '') : null;
 
     // rating average
-    const ratingAverage = document.querySelector('#movie-rat-avg') ? document.querySelector('#movie-rat-avg').textContent.split('').filter(word => word !== ' ' && word !== '\n' && word !== ',').toString() : '-';
+    const ratingAverage = document.querySelector('#movie-rat-avg') ? document.querySelector('#movie-rat-avg').textContent.split('').filter(word => word !== ' ' && word !== '\n' && word !== ',').toString() : null;
 
     // rating count
-    const ratingCount = document.querySelector('#movie-count-rat > span') ? document.querySelector('#movie-count-rat > span').textContent : '-';
+    const ratingCount = document.querySelector('#movie-count-rat > span') ? document.querySelector('#movie-count-rat > span').textContent : null;
+
+    let profesionalReviewsCounter;
+
+    // profesionalReviewsCounter
+    if (document.querySelector('.total-abs') !== null) {
+      const professionalReviewCount222 = document.querySelector('.total-abs').textContent;
+
+      let countTotalReviews = [];
+
+      const countTotalReviewsList = document.querySelectorAll('.legend-wrapper .leg') || [];
+
+      countTotalReviewsList.forEach(genre => {
+        countTotalReviews.push(genre.textContent);
+      });
+
+      profesionalReviewsCounter = {
+        positive: countTotalReviews[0],
+        neutral: countTotalReviews[1],
+        negative: countTotalReviews[2],
+        total: professionalReviewCount222.toString().replace(/\s/g, '')
+      }
+    } else {
+      profesionalReviewsCounter = null;
+    }
 
     // professional review list
     const professionalReviewList = document.querySelectorAll('#pro-reviews li') || [];
@@ -84,7 +110,7 @@ exports.init = async (page, browser) => {
 
       if (reviewBody && reviewAuthor) {
         reviewList.push({
-          review: reviewBody.textContent,
+          body: reviewBody.textContent,
           author: reviewAuthor.textContent,
           evaluation: reviewEvaluation.outerHTML.split(' ')[5].replace('"', '')
         });
@@ -110,13 +136,15 @@ exports.init = async (page, browser) => {
       credits: reviewCredits,
       casting: reviewCasting,
       producer: reviewProducer,
+      genre: genre,
       genres: reviewGenres,
       sinopsis: reviewDescription,
       thumbnail_medium: reviewImage,
       thumbnail_large: reviewLargeThumbnail,
       rating_average: ratingAverage,
       rating_count: ratingCount,
-      review_list: reviewList
+      professional_register: profesionalReviewsCounter,
+      professional_reviews: reviewList,
     }
   });
 

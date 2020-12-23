@@ -9,43 +9,39 @@ admin.initializeApp({
   databaseURL: "https://filmaffinity-api.firebaseio.com"
 });
 
-// TODO: cambiar las variables con film y poner 'media' en su lugar (para que sea agnótico al tipo: movies, shows, documentary, etc)
-
 async function scrappingFilmaffinty (id) {
-  const db = admin.firestore();
-
-  let config = {
+  const config = {
+    db: admin.firestore(),
     headless: true,
-    viewDeminsions: {
+    view: {
       width: 1024,
-      height: 1800
-    },
-    filmId: id
+      height: 2500
+    }
   }
 
-  const urlFilm = `https://www.filmaffinity.com/es/film${config.filmId}.html`;
+  const urlFilm = `https://www.filmaffinity.com/es/film${id}.html`;
 
   const browser = await puppeteer.launch({
     headless: config.headless,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    defaultViewport : { 'width' : config.viewDeminsions.width, 'height' : config.viewDeminsions.height }
+    defaultViewport : { 'width' : config.view.width, 'height' : config.view.height }
   });
 
   const page = await browser.newPage();
 
-  await page.setViewport({ width: config.viewDeminsions.width, height: config.viewDeminsions.height});
+  await page.setViewport({ width: config.view.width, height: config.view.height});
   await page.goto(urlFilm);
 
-  let reviewsRef = db.collection('reviews');
+  const reviewsRef = config.db.collection('reviews');
 
   try {
     await page.waitForSelector('button.sc-ifAKCX', { timeout: 300 });
     await page.click('button.sc-ifAKCX.ljEJIv');
     const review = await filmaffinityScrapper.init(page, browser);
-    reviewsRef.doc(`${config.filmId}`).set({ id: config.filmId, ...review, url: urlFilm });
-    console.log(`==> ${config.filmId} == ${review.title} | OK <==`);
+    reviewsRef.doc(`${id}`).set({ id: id, ...review, url: urlFilm });
+    console.log(`==> ${id} == ${review.title} | OK <==`);
   } catch (e) {
-    console.log(`==> ${config.filmId} | KO <==`);
+    console.log(`==> ${id} | KO <==`);
   }
 
   await browser.close();
@@ -53,7 +49,7 @@ async function scrappingFilmaffinty (id) {
 
 (async () => {
 
-  for (let i = 853177; i < 900000; i++) {
+  for (let i = 800000; i < 900000; i++) {
     await scrappingFilmaffinty(i);
   }
 

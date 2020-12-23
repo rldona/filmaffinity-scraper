@@ -11,6 +11,9 @@ const db = admin.firestore();
 // búsqueda por un término
 // .where('review.title', '==', 'Caos en la ciudad (TV)')
 
+// .where('genre', '==', 'Serie de TV')
+// .where('genre', '!=', 'Serie de TV')
+
 module.exports = function(app) {
 
   ////////////
@@ -24,7 +27,7 @@ module.exports = function(app) {
     const query = req.query.q;
 
     db.collection('reviews')
-      // .where('genres[0]', 'no-it', ['Serie de TV'])
+      .where('genre_main', '==', 'Serie de TV')
       .limit(10)
       .get()
       .then((snapshot) => {
