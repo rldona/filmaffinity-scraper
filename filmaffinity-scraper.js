@@ -22,6 +22,8 @@ exports.init = async (page, browser) => {
       reviewDirectors.push(directorItem);
     });
 
+    reviewDirectors = reviewDirectors.length > 0 ? reviewDirectors : null;
+
     // credits
     let reviewCredits = [];
 
@@ -31,6 +33,8 @@ exports.init = async (page, browser) => {
       let creditItem = review.querySelector('span').textContent;
       reviewCredits.push(creditItem);
     });
+
+    reviewCredits = reviewCredits.length > 0 ? reviewCredits : null;
 
     // casting
     let reviewCasting = [];
@@ -42,6 +46,8 @@ exports.init = async (page, browser) => {
       reviewCasting.push(castingItem);
     });
 
+    reviewCasting = reviewCasting.length > 0 ? reviewCasting : null;
+
     // producer
     let reviewProducer = [];
 
@@ -52,6 +58,8 @@ exports.init = async (page, browser) => {
       reviewProducer.push(producerItem);
     });
 
+    reviewProducer = reviewProducer.length > 0 ? reviewProducer : null;
+
     let reviewGenres = [];
 
     const reviewGenresList = document.querySelectorAll('.card-genres span') || [];
@@ -60,7 +68,13 @@ exports.init = async (page, browser) => {
       reviewGenres.push(genre.textContent);
     });
 
-    const genre = reviewGenres[0] || null;
+    let genre = null;
+
+    if (reviewGenres.length === 0) {
+      reviewGenres = null;
+    } else {
+      genre = reviewGenres[0];
+    }
 
     // sinopsis
     const reviewDescription = document.querySelector('[itemprop="description"]') ? document.querySelector('[itemprop="description"]').textContent : null;
@@ -117,13 +131,17 @@ exports.init = async (page, browser) => {
       }
     });
 
-    // credits configuration
-    reviewCredits.shift();
+    reviewList = reviewList.length > 0 ? reviewList : null;
 
-    // TODO: hay que eliminar los generos que se cuelan al final
-    reviewCredits = reviewCredits.filter(val => {
-      return reviewCasting.indexOf(val) == -1;
-    });
+    if (reviewCredits.length > 0 && reviewCasting.length > 0) {
+      // credits configuration
+      reviewCredits.shift();
+
+      // TODO: hay que eliminar los generos que se cuelan al final
+      reviewCredits = reviewCredits.filter(val => {
+        return reviewCasting.indexOf(val) == -1;
+      });
+    }
 
     // large thumbnail
     const reviewLargeThumbnail = reviewImage.replace("mmed", "large");
