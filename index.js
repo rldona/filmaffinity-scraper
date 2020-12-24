@@ -17,7 +17,7 @@ async function scrappingFilmaffinty (id) {
       width: 1024,
       height: 2500
     },
-    language: 'es'
+    language: 'en'
   }
 
   const urlFilm = `https://www.filmaffinity.com/${config.language}/film${id}.html`;
@@ -35,15 +35,23 @@ async function scrappingFilmaffinty (id) {
 
   const reviewsRef = config.db.collection(`reviews-${config.language}`);
 
-  try {
+  // try {
+
+  let error404 = await page.goto(urlFilm);
+
+  if (error404.status() !== 404) {
     await page.waitForSelector('button.sc-ifAKCX', { timeout: 500 });
     await page.click('button.sc-ifAKCX.ljEJIv');
     const review = await filmaffinityScrapper.init(page, browser);
     reviewsRef.doc(`${id}`).set({ id: id, ...review, url: urlFilm });
     console.log(`==> ${id} == ${review.title} | OK <==`);
-  } catch (e) {
+  } else {
     console.log(`==> ${id} | KO <==`);
   }
+
+  // } catch (e) {
+  //   console.log(`==> ${id} | KO <==`);
+  // }
 
   await browser.close();
 }

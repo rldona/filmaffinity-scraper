@@ -22,8 +22,6 @@ exports.init = async (page, browser) => {
       reviewDirectors.push(directorItem);
     });
 
-    reviewDirectors = reviewDirectors.length > 0 ? reviewDirectors : null;
-
     // credits
     let reviewCredits = [];
 
@@ -33,8 +31,6 @@ exports.init = async (page, browser) => {
       let creditItem = review.querySelector('span').textContent;
       reviewCredits.push(creditItem);
     });
-
-    reviewCredits = reviewCredits.length > 0 ? reviewCredits : null;
 
     // casting
     let reviewCasting = [];
@@ -46,8 +42,6 @@ exports.init = async (page, browser) => {
       reviewCasting.push(castingItem);
     });
 
-    reviewCasting = reviewCasting.length > 0 ? reviewCasting : null;
-
     // producer
     let reviewProducer = [];
 
@@ -57,8 +51,6 @@ exports.init = async (page, browser) => {
       let producerItem = producer.querySelector('span').textContent;
       reviewProducer.push(producerItem);
     });
-
-    reviewProducer = reviewProducer.length > 0 ? reviewProducer : null;
 
     let reviewGenres = [];
 

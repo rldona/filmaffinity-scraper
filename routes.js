@@ -25,9 +25,10 @@ module.exports = function(app) {
   //
   app.get('/movies', async (req, res) => {
     const query = req.query.q;
+    const language = req.params.language;
 
-    db.collection('reviews')
-      .where('genre_main', '==', 'Serie de TV')
+    db.collection(`reviews-${language}`)
+      .where('genre', '!=', ['Serie de TV'])
       .limit(10)
       .get()
       .then((snapshot) => {
@@ -49,7 +50,9 @@ module.exports = function(app) {
   //
   app.get('/movie/:id', async (req, res) => {
     const id = req.params.id;
-    db.collection('reviews').doc(`${id}`).get().then(doc => {
+    const language = req.params.language;
+
+    db.collection(`reviews-${language}`).doc(`${id}`).get().then(doc => {
       if (!doc.exists) res.json({});
       res.json(doc.data());
     })
@@ -60,7 +63,9 @@ module.exports = function(app) {
   //
   app.get('/movie/:id/reviews', async (req, res) => {
     const id = req.params.id;
-    db.collection('reviews').doc(`${id}`).get().then(doc => {
+    const language = req.params.language;
+
+    db.collection(`reviews-${language}`).doc(`${id}`).get().then(doc => {
       if (!doc.exists) res.json({});
       res.json({
         id: doc.data().id,
@@ -75,9 +80,10 @@ module.exports = function(app) {
 
   app.get('/tv', async (req, res) => {
     const query = req.query.q;
+    const language = req.params.language;
 
-    db.collection('reviews')
-      .where('genres', 'array-contains', ['Serie de TV'])
+    db.collection(`reviews-${language}`)
+      .where('genre', '==', ['Serie de TV'])
       .limit(10)
       .get()
       .then((snapshot) => {
@@ -94,7 +100,9 @@ module.exports = function(app) {
 
   app.get('/tv/:id', async (req, res) => {
     const id = req.params.id;
-    db.collection('reviews').doc(`${id}`).get().then(doc => {
+    const language = req.params.language;
+
+    db.collection(`reviews-${language}`).doc(`${id}`).get().then(doc => {
       if (!doc.exists) res.json({});
       res.json(doc.data());
     })
@@ -105,7 +113,9 @@ module.exports = function(app) {
   //
   app.get('/tv/:id/reviews', async (req, res) => {
     const id = req.params.id;
-    db.collection('reviews').doc(`${id}`).get().then(doc => {
+    const language = req.params.language;
+
+    db.collection(`reviews-${language}`).doc(`${id}`).get().then(doc => {
       if (!doc.exists) res.json({});
       res.json({
         id: doc.data().id,
@@ -123,8 +133,9 @@ module.exports = function(app) {
   //
   app.get('/search', async (req, res) => {
     const query = req.query.q;
+    const language = req.params.language;
 
-    db.collection('reviews')
+    db.collection(`reviews-${language}`)
       .where('title', '==', query)
       .limit(10)
       .get()
@@ -140,6 +151,9 @@ module.exports = function(app) {
       });
   });
 
+  //
+  // Pagitation
+  //
   app.get('/media', async (req,res) => {
     const type   = req.query.type || 'movies';
     const filter = req.query.filter || 'title';
