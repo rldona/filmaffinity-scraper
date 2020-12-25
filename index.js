@@ -60,7 +60,7 @@ async function scrappingFilmaffinty (id) {
 
   // await scrappingFilmaffinty(720892);
 
-  for (let i = 720891; i < 800000; i++) {
+  for (let i = 725502; i < 800000; i++) {
     await scrappingFilmaffinty(i);
   }
 
