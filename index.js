@@ -9,49 +9,45 @@ admin.initializeApp({
   databaseURL: "https://filmaffinity-api.firebaseio.com"
 });
 
+const config = {
+  db: admin.firestore(),
+  headless: true,
+  view: {
+    width: 1024,
+    height: 2500
+  },
+  language: 'es'
+}
+
+const reviewsRef = config.db.collection(`reviews-${config.language}`);
+
 async function scrappingFilmaffinty (id) {
-  const config = {
-    db: admin.firestore(),
-    headless: true,
-    view: {
-      width: 1024,
-      height: 2500
-    },
-    language: 'es'
-  }
-
-  const urlFilm = `https://www.filmaffinity.com/${config.language}/film${id}.html`;
-
   const browser = await puppeteer.launch({
     headless: config.headless,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    defaultViewport : { 'width' : config.view.width, 'height' : config.view.height }
+    browserContext: "default",
   });
 
   const page = await browser.newPage();
-
   await page.setViewport({ width: config.view.width, height: config.view.height});
-  await page.goto(urlFilm);
 
-  const reviewsRef = config.db.collection(`reviews-${config.language}`);
+  const url = `https://www.filmaffinity.com/${config.language}/film${id}.html`;
 
-  // try {
+  let browserLoad = await page.goto(url);
 
-  let error404 = await page.goto(urlFilm);
+  console.log(browserLoad.status());
 
-  if (error404.status() !== 404) {
-    await page.waitForSelector('button.sc-ifAKCX', { timeout: 500 });
+  if (browserLoad.status() !== 404) {
+    await page.goto(url);
+    await page.waitForSelector('button.sc-ifAKCX', { timeout: 0 });
     await page.click('button.sc-ifAKCX.ljEJIv');
+    await page.waitForSelector('.movie-disclaimer', { timeout: 0 });
     const review = await filmaffinityScrapper.init(page, browser);
-    reviewsRef.doc(`${id}`).set({ id: id, ...review, url: urlFilm });
+    reviewsRef.doc(`${id}`).set({ id, ...review, url });
     console.log(`==> ${id} == ${review.title} | OK <==`);
   } else {
     console.log(`==> ${id} | KO <==`);
   }
-
-  // } catch (e) {
-  //   console.log(`==> ${id} | KO <==`);
-  // }
 
   await browser.close();
 }
@@ -60,12 +56,12 @@ async function scrappingFilmaffinty (id) {
 
   // await scrappingFilmaffinty(720892);
 
-  for (let i = 725502; i < 800000; i++) {
-    await scrappingFilmaffinty(i);
+  for (let id = 720892; id < 800000; id++) {
+    await scrappingFilmaffinty(id);
   }
 
   console.log('==> Carga completa <==');
 
-  process.exit();
+  process.exit(1);
 
 })();
