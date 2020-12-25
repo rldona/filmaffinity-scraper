@@ -4,13 +4,13 @@ exports.init = async (page, browser) => {
   const result = await page.evaluate(() => {
     // title
     // TODO: remove el último carcter en blanco y si tuiera
-    const movieTitle = document.querySelector('[itemprop="name"]') ? document.querySelector('[itemprop="name"]').textContent : null;
+    const movieTitle = document.querySelector('[itemprop="name"]') ? document.querySelector('[itemprop="name"]').textContent : '';
 
     // year
-    const reviewYear = document.querySelector('[itemprop="datePublished"]') ? document.querySelector('[itemprop="datePublished"]').textContent : null;
+    const reviewYear = document.querySelector('[itemprop="datePublished"]') ? document.querySelector('[itemprop="datePublished"]').textContent : '';
 
     // duration
-    const reviewDuration = document.querySelector('[itemprop="duration"]') ? document.querySelector('[itemprop="duration"]').textContent.split(' ')[0] : null;
+    const reviewDuration = document.querySelector('[itemprop="duration"]') ? document.querySelector('[itemprop="duration"]').textContent.split(' ')[0] : '';
 
     // directors
     let reviewDirectors = [];
@@ -63,22 +63,22 @@ exports.init = async (page, browser) => {
     let genre = null;
 
     if (reviewGenres.length === 0) {
-      reviewGenres = null;
+      reviewGenres = [];
     } else {
       genre = reviewGenres[0];
     }
 
     // sinopsis
-    const reviewDescription = document.querySelector('[itemprop="description"]') ? document.querySelector('[itemprop="description"]').textContent : null;
+    const reviewDescription = document.querySelector('[itemprop="description"]') ? document.querySelector('[itemprop="description"]').textContent : '';
 
     // thumbnail
-    const reviewImage = document.querySelector('[itemprop="image"]') ? document.querySelector('[itemprop="image"]').outerHTML.split(' ')[4].replace('src="', '').replace('"', '') : null;
+    const reviewImage = document.querySelector('[itemprop="image"]') ? document.querySelector('[itemprop="image"]').outerHTML.split(' ')[4].replace('src="', '').replace('"', '') : '';
 
     // rating average
-    const ratingAverage = document.querySelector('#movie-rat-avg') ? parseFloat(document.querySelector('#movie-rat-avg').textContent.split('').filter(word => word !== ' ' && word !== '\n' && word !== ',').toString().replace(',', '.')) : null;
+    const ratingAverage = document.querySelector('#movie-rat-avg') ? document.querySelector('#movie-rat-avg').getAttribute('content') : '';
 
     // rating count
-    const ratingCount = document.querySelector('#movie-count-rat > span') ? document.querySelector('#movie-count-rat > span').textContent : null;
+    const ratingCount = document.querySelector('#movie-count-rat > span') ? document.querySelector('#movie-count-rat > span').textContent : '';
 
     let profesionalReviewsCounter;
 
@@ -123,7 +123,7 @@ exports.init = async (page, browser) => {
       }
     });
 
-    reviewList = reviewList.length > 0 ? reviewList : null;
+    reviewList = reviewList.length > 0 ? reviewList : [];
 
     if (reviewCredits.length > 0 && reviewCasting.length > 0) {
       // credits configuration
@@ -135,13 +135,10 @@ exports.init = async (page, browser) => {
       });
     }
 
-    // large thumbnail
-    const reviewLargeThumbnail = reviewImage.replace("mmed", "large");
-
     return {
       title: movieTitle,
-      duration: parseInt(reviewDuration),
-      year: parseInt(reviewYear),
+      duration: reviewDuration,
+      year: reviewYear,
       directors: reviewDirectors,
       credits: reviewCredits,
       casting: reviewCasting,
@@ -150,16 +147,29 @@ exports.init = async (page, browser) => {
       genres: reviewGenres,
       sinopsis: reviewDescription,
       thumbnail_medium: reviewImage,
-      thumbnail_large: reviewLargeThumbnail,
       rating_average: ratingAverage,
-      rating_count: parseInt(ratingCount),
+      rating_count: ratingCount,
       professional_register: profesionalReviewsCounter,
       professional_reviews: reviewList,
     }
   });
 
-  // country
-  result.country = await page.$eval('#country-img > img', span => span.getAttribute('title'));
+  result.country = await page.$eval('#country-img > img', span => span.getAttribute('title')) || null;
+  result.title = result.title !== '' ? result.title : null;
+  result.duration = result.duration !== '' ? parseInt(result.duration) : null;
+  result.year = result.year !== '' ? parseInt(result.year) : null;
+  result.directors = result.directors.length > 0 ? result.directors : null;
+  result.credits = result.credits.length > 0 ? result.credits : null;
+  result.casting = result.casting.length > 0 ? result.casting : null;
+  result.producer = result.producer.length > 0 ? result.producer : null;
+  result.genre = result.genre !== '' ? result.genre : null;
+  result.genres = result.genres.length > 0 ? result.genres : null;
+  result.sinopsis = result.sinopsis !== '' ? result.sinopsis.replace('(FILMAFFINITY)', '') : null;
+  result.thumbnail_medium = result.thumbnail_medium !== '' ? result.thumbnail_medium : null;
+  result.thumbnail_large = result.thumbnail_medium ? result.thumbnail_medium.replace("mmed", "large") : null;
+  result.rating_average = result.rating_average !== '' ? parseFloat(result.rating_average) : null;
+  result.rating_count = result.rating_count ? parseInt(result.rating_count) : null;
+  result.professional_reviews = result.professional_reviews.length > 0 ? result.professional_reviews : null;
 
   return result;
 }

@@ -17,7 +17,7 @@ async function scrappingFilmaffinty (id) {
       width: 1024,
       height: 2500
     },
-    language: 'en'
+    language: 'es'
   }
 
   const urlFilm = `https://www.filmaffinity.com/${config.language}/film${id}.html`;
@@ -45,6 +45,7 @@ async function scrappingFilmaffinty (id) {
     const review = await filmaffinityScrapper.init(page, browser);
     reviewsRef.doc(`${id}`).set({ id: id, ...review, url: urlFilm });
     console.log(`==> ${id} == ${review.title} | OK <==`);
+    console.log(review);
   } else {
     console.log(`==> ${id} | KO <==`);
   }
