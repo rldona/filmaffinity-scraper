@@ -3,7 +3,6 @@ const puppeteer = require('puppeteer');
 exports.init = async (page, browser) => {
   const result = await page.evaluate(() => {
     // title
-    // TODO: remove el último carcter en blanco y si tuiera
     const movieTitle = document.querySelector('[itemprop="name"]') ? document.querySelector('[itemprop="name"]').textContent : '';
 
     // year
@@ -17,48 +16,66 @@ exports.init = async (page, browser) => {
 
     const reviewDirectorsList = document.querySelectorAll('.directors > .credits > .nb > a') || [];
 
-    reviewDirectorsList.forEach(directors => {
-      let directorItem = directors.querySelector('span').textContent;
-      reviewDirectors.push(directorItem);
-    });
+    if (reviewDirectorsList && reviewDirectorsList.length > 0) {
+      reviewDirectorsList.forEach(directors => {
+        if (directors.querySelector('span')) {
+          let directorItem = directors.querySelector('span').textContent;
+          reviewDirectors.push(directorItem);
+        }
+      });
+    }
 
     // credits
     let reviewCredits = [];
 
     const reviewCreditList = document.querySelectorAll('.nb') || [];
 
-    reviewCreditList.forEach(review => {
-      let creditItem = review.querySelector('span').textContent;
-      reviewCredits.push(creditItem);
-    });
+    if (reviewCreditList && reviewCreditList.length > 0) {
+      reviewCreditList.forEach(review => {
+        if (review.querySelector('span')) {
+          let creditItem = review.querySelector('span').textContent;
+          reviewCredits.push(creditItem);
+        }
+      });
+    }
 
     // casting
     let reviewCasting = [];
 
     const reviewCastingList = document.querySelectorAll('.card-cast > .credits > .nb > a') || [];
 
-    reviewCastingList.forEach(casting => {
-      let castingItem = casting.querySelector('span').textContent;
-      reviewCasting.push(castingItem);
-    });
+    if (reviewCastingList && reviewCastingList.length > 0) {
+      reviewCastingList.forEach(casting => {
+        if (casting.querySelector('span')) {
+          let castingItem = casting.querySelector('span').textContent;
+          reviewCasting.push(castingItem);
+        }
+      });
+    }
 
     // producer
     let reviewProducer = [];
 
     const reviewProducerList = document.querySelectorAll('.card-producer > .credits > .nb') || [];
 
-    reviewProducerList.forEach(producer => {
-      let producerItem = producer.querySelector('span').textContent;
-      reviewProducer.push(producerItem);
-    });
+    if (reviewProducerList && reviewProducerList.length > 0) {
+      reviewProducerList.forEach(producer => {
+        if (producer.querySelector('span')) {
+          let producerItem = producer.querySelector('span').textContent;
+          reviewProducer.push(producerItem);
+        }
+      });
+    }
 
     let reviewGenres = [];
 
     const reviewGenresList = document.querySelectorAll('.card-genres span') || [];
 
-    reviewGenresList.forEach(genre => {
-      reviewGenres.push(genre.textContent);
-    });
+    if (reviewGenresList && reviewGenresList.length > 0) {
+      reviewGenresList.forEach(genre => {
+        reviewGenres.push(genre.textContent);
+      });
+    }
 
     let genre = null;
 
@@ -150,7 +167,7 @@ exports.init = async (page, browser) => {
       rating_average: ratingAverage,
       rating_count: ratingCount,
       professional_register: profesionalReviewsCounter,
-      professional_reviews: reviewList,
+      professional_reviews: reviewList
     }
   });
 
