@@ -41,10 +41,11 @@ async function scrappingFilmaffinty (id) {
     await page.goto(url);
     await page.waitForSelector('button.sc-ifAKCX', { timeout: 0 });
     await page.click('button.sc-ifAKCX.ljEJIv');
-    await page.waitForSelector('.movie-disclaimer', { timeout: 0 });
+    // await page.waitForSelector('.movie-disclaimer', { timeout: 0 });
     const review = await filmaffinityScrapper.init(page, browser);
-    reviewsRef.doc(`${id}`).set({ id, ...review, url });
+    await reviewsRef.doc(`${id}`).set({ id, ...review, url });
     console.log(`==> ${id} == ${review.title} | OK <==`);
+    // console.log(review);
   } else {
     console.log(`==> ${id} | KO <==`);
   }
@@ -54,9 +55,9 @@ async function scrappingFilmaffinty (id) {
 
 (async () => {
 
-  // await scrappingFilmaffinty(720892);
+  // await scrappingFilmaffinty(700001);
 
-  for (let id = 720892; id < 800000; id++) {
+  for (let id = 733900; id < 800000; id++) {
     await scrappingFilmaffinty(id);
   }
 
