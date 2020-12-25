@@ -29,7 +29,7 @@ async function scrappingFilmaffinty (id) {
   });
 
   const page = await browser.newPage();
-  await page.setViewport({ width: config.view.width, height: config.view.height});
+  await page.setViewport({ width: config.view.width, height: config.view.height });
 
   const url = `https://www.filmaffinity.com/${config.language}/film${id}.html`;
 
@@ -53,7 +53,7 @@ async function scrappingFilmaffinty (id) {
 
 (async () => {
 
-  for (let id = 733900; id < 800000; id++) {
+  for (let id = 741504; id < 800000; id++) {
     await scrappingFilmaffinty(id);
   }
 

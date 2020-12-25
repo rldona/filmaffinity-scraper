@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 
 exports.init = async (page, browser) => {
-  const result = await page.evaluate(() => {
+  const result = await page.evaluate(async () => {
     const movieTitle = document.querySelector('[itemprop="name"]') ? document.querySelector('[itemprop="name"]').textContent : '';
     const reviewYear = document.querySelector('[itemprop="datePublished"]') ? document.querySelector('[itemprop="datePublished"]').textContent : '';
     const reviewDuration = document.querySelector('[itemprop="duration"]') ? document.querySelector('[itemprop="duration"]').textContent : '';
@@ -10,59 +10,21 @@ exports.init = async (page, browser) => {
     const ratingAverage = document.querySelector('#movie-rat-avg') ? document.querySelector('#movie-rat-avg').getAttribute('content') : '';
     const ratingCount = document.querySelector('#movie-count-rat > span') ? document.querySelector('#movie-count-rat > span').textContent : '';
 
-    /////
-
-    let reviewDirectors = [];
-
-    const reviewDirectorsList = document.querySelectorAll('.directors > .credits > .nb > a');
-
-    if (reviewDirectorsList && reviewDirectorsList.length > 0) {
-      reviewDirectorsList.forEach(directors => {
-        if (directors.querySelector('span')) {
-          let directorItem = directors.querySelector('span').textContent;
-          reviewDirectors.push(directorItem);
+    const createList = async (docList) => {
+      let list = [];
+      docList.forEach(docs => {
+        if (docs.querySelector('span')) {
+          let docItem = docs.querySelector('span').textContent;
+          list.push(docItem);
         }
       });
+      return list;
     }
 
-    let reviewCredits = [];
-
-    const reviewCreditList = document.querySelectorAll('.nb');
-
-    if (reviewCreditList && reviewCreditList.length > 0) {
-      reviewCreditList.forEach(review => {
-        if (review.querySelector('span')) {
-          let creditItem = review.querySelector('span').textContent;
-          reviewCredits.push(creditItem);
-        }
-      });
-    }
-
-    let reviewCasting = [];
-
-    const reviewCastingList = document.querySelectorAll('.card-cast > .credits > .nb > a');
-
-    if (reviewCastingList && reviewCastingList.length > 0) {
-      reviewCastingList.forEach(casting => {
-        if (casting.querySelector('span')) {
-          let castingItem = casting.querySelector('span').textContent;
-          reviewCasting.push(castingItem);
-        }
-      });
-    }
-
-    let reviewProducer = [];
-
-    const reviewProducerList = document.querySelectorAll('.card-producer > .credits > .nb');
-
-    if (reviewProducerList && reviewProducerList.length > 0) {
-      reviewProducerList.forEach(producer => {
-        if (producer.querySelector('span')) {
-          let producerItem = producer.querySelector('span').textContent;
-          reviewProducer.push(producerItem);
-        }
-      });
-    }
+    const reviewDirectors = await createList(document.querySelectorAll('.directors > .credits > .nb > a'));
+    const reviewCredits = await createList(document.querySelectorAll('.nb'));
+    const reviewCasting = await createList(document.querySelectorAll('.card-cast > .credits > .nb > a'));
+    const reviewProducer = await createList(document.querySelectorAll('.card-producer > .credits > .nb'));
 
     let reviewGenres = [];
 
@@ -129,6 +91,8 @@ exports.init = async (page, browser) => {
       });
     }
 
+    ////
+
     return {
       title: movieTitle,
       duration: reviewDuration,
@@ -162,10 +126,12 @@ exports.init = async (page, browser) => {
     });
   }
 
+  const hasCountryImg = await page.$('#country-img > img');
+
   result.title = result.title !== '' ? result.title : null;
   result.duration = result.duration !== '' ? parseInt(result.duration.split(' ')[0]) : null;
   result.year = result.year !== '' ? parseInt(result.year) : null;
-  result.country = await page.$eval('#country-img > img', span => span.getAttribute('title')) || null;
+  result.country = hasCountryImg ? await page.$eval('#country-img > img', span => span.getAttribute('title')) : null;
   result.directors = result.directors.length > 0 ? result.directors : null;
   result.credits = result.credits.length > 0 ? result.credits : null;
   result.casting = result.casting.length > 0 ? result.casting : null;
