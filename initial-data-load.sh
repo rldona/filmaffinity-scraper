@@ -1,10 +1,10 @@
-pm2 start index01.js &&
-pm2 start index02.js &&
-pm2 start index03.js &&
-pm2 start index04.js &&
-pm2 start index05.js &&
-pm2 start index06.js &&
-pm2 start index07.js &&
-pm2 start index08.js &&
-pm2 start index09.js &&
-pm2 start index10.js
+pm2 start index.js --cron "0 0 * * 1" -- 0 100000 &&
+pm2 start index.js --cron "0 0 * * 1" -- 100000 200000 &&
+pm2 start index.js --cron "0 0 * * 3" -- 200000 300000 &&
+pm2 start index.js --cron "0 0 * * 3" -- 300000 400000 &&
+pm2 start index.js --cron "0 0 * * 5" -- 400000 500000 &&
+pm2 start index.js --cron "0 0 * * 5" -- 500000 600000 &&
+pm2 start index.js --cron "0 0 * * 7" -- 600000 700000 &&
+pm2 start index.js --cron "0 0 * * 7" -- 700000 800000 &&
+pm2 start index.js --cron "0 0 * * 7" -- 800000 900000 &&
+pm2 start index.js --cron "0 0 * * 7" -- 900000 1000000

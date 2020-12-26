@@ -16,7 +16,11 @@ const config = {
     width: 1024,
     height: 2500
   },
-  language: 'es'
+  language: 'es',
+  range: {
+    start: parseInt(process.argv[2]),
+    end: parseInt(process.argv[3])
+  }
 }
 
 const reviewsRef = config.db.collection(`reviews-${config.language}`);
@@ -53,7 +57,7 @@ async function scrappingFilmaffinty (id) {
 
 (async () => {
 
-  for (let id = 700000; id < 800000; id++) {
+  for (let id = config.range.start; id < config.range.end; id++) {
     await scrappingFilmaffinty(id);
   }
 
