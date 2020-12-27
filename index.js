@@ -55,7 +55,7 @@ async function scrappingFilmaffinty (id) {
 
   ////
 
-  let browserLoad = await page.goto(url, { timeout: 0 });
+  let browserLoad = await page.goto(url);
 
   console.log(browserLoad.status());
 
