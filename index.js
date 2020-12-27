@@ -35,8 +35,6 @@ async function scrappingFilmaffinty (id) {
   const page = await browser.newPage();
   await page.setViewport({ width: config.view.width, height: config.view.height });
 
-  page.setDefaultNavigationTimeout(0);
-
   const url = `https://www.filmaffinity.com/${config.language}/film${id}.html`;
 
   ////
@@ -55,7 +53,7 @@ async function scrappingFilmaffinty (id) {
 
   ////
 
-  let browserLoad = await page.goto(url);
+  let browserLoad = await page.goto(url, { waitUntil: 'load', timeout: 0 });
 
   console.log(browserLoad.status());
 
