@@ -29,7 +29,7 @@ async function scrappingFilmaffinty (id) {
   const browser = await puppeteer.launch({
     headless: config.headless,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    browserContext: "default",
+    browserContext: "default"
   });
 
   const page = await browser.newPage();
@@ -37,14 +37,21 @@ async function scrappingFilmaffinty (id) {
 
   const url = `https://www.filmaffinity.com/${config.language}/film${id}.html`;
 
+  await page.setRequestInterception(true);
+
+  page.on('request', (request) => {
+      if (request.resourceType() === 'document') {
+          request.continue();
+      } else {
+          request.abort();
+      }
+  });
+
   let browserLoad = await page.goto(url);
 
   console.log(browserLoad.status());
 
   if (browserLoad.status() !== 404) {
-    await page.goto(url);
-    await page.waitForSelector('button.sc-ifAKCX', { timeout: 0 });
-    await page.click('button.sc-ifAKCX.ljEJIv');
     const review = await filmaffinityScrapper.init(page, browser);
     await reviewsRef.doc(`${id}`).set({ id, ...review, url });
     console.log(`==> ${id} == ${review.title} | OK <==`);
