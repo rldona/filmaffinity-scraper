@@ -35,7 +35,13 @@ async function scrappingFilmaffinty (id) {
   const page = await browser.newPage();
   await page.setViewport({ width: config.view.width, height: config.view.height });
 
+  page.setDefaultNavigationTimeout(0);
+
   const url = `https://www.filmaffinity.com/${config.language}/film${id}.html`;
+
+  ////
+
+  // Scrapping only HTML ulta fast ==> 429 error
 
   await page.setRequestInterception(true);
 
@@ -47,7 +53,9 @@ async function scrappingFilmaffinty (id) {
       }
   });
 
-  let browserLoad = await page.goto(url);
+  ////
+
+  let browserLoad = await page.goto(url, { timeout: 0 });
 
   console.log(browserLoad.status());
 
