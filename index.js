@@ -55,7 +55,6 @@ async function scrappingFilmaffinty (id) {
     const review = await filmaffinityScrapper.init(page, browser);
     await reviewsRef.doc(`${id}`).set({ id, ...review, url });
     console.log(`==> ${id} == ${review.title} | OK <==`);
-    console.log(review);
   } else {
     console.log(`==> ${id} | KO <==`);
   }
