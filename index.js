@@ -59,7 +59,7 @@ async function scrappingFilmaffinty (id) {
 
   if (browserLoad.status() !== 404) {
     const review = await filmaffinityScrapper.init(page, browser);
-    await reviewsRef.doc(`${id}`).set({ id, ...review, url });
+    // await reviewsRef.doc(`${id}`).set({ id, ...review, url });
     console.log(`==> ${id} == ${review.title} | OK <==`);
   } else {
     console.log(`==> ${id} | KO <==`);
