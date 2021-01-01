@@ -6,6 +6,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "firebase-admin": "^9.4.2",
+    "get-free-https-proxy": "^2.0.2",
     "loadsh": "^0.0.4",
     "puppeteer": "^5.5.0"
   }
