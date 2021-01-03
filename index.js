@@ -46,8 +46,6 @@ async function scrappingFilmaffinty (proxy, url) {
 
   ////
 
-  // Scrapping only HTML ulta fast ==> 429 error
-
   await page.setRequestInterception(true);
 
   page.on('request', (request) => {
@@ -80,12 +78,7 @@ async function scrappingFilmaffinty (proxy, url) {
 
 (async () => {
 
-  // DigitalOcean (Doplets 5€)
-  // AWS Free
-
-  let url;
-  let review;
-  let id = config.range.start;
+  let url, review, id = config.range.start;
 
   // get proxy list
   const proxies = await getProxies();
@@ -99,9 +92,9 @@ async function scrappingFilmaffinty (proxy, url) {
     review = await scrappingFilmaffinty(randomProxy, url);
 
     if (review.status === 429) {
-      // Reintentar con el mismo id y con una IP difernete desde la function
-      // TODO: sustituir por el fetch/await de URL de la function Firebase y pasar id
-      review = await scrappingFilmaffinty(url);
+      config.db.collection(`reviews-${config.language}-error`).doc(`${id}`).set({ error: 429 });
+      process.exit(1);
+      // TODO: pm2 restart el script
     }
 
     if (review.status === 404) {
